@@ -38,23 +38,25 @@ namespace MettlerToledoLoadCellTool
         private delegate void SetTextDeleg(string text);
 
         private void si_DataReceived(string data) {
-            //SX G      0.542 kg
             try
             {
-                string weight = data.Substring(10, 11);
-                weightLabel.Text = weight;
+                string nettWeight = data.Substring(21, 16);
+                string tarraWeight = data.Substring(38, 16);
+                weightLabel.Text = nettWeight;
+                tarraWeightLabel.Text = tarraWeight;
             }
             catch (Exception ex)
             {
-                eventBox.Items.Insert(0, "Error: parsing weight to string " + ex.ToString());
+                eventBox.Items.Insert(0, "Error: parsing weight to string");
             }
             eventBox.Items.Insert(0, data.Trim()); 
         }
 
         private void closeBtn_Click(object sender, EventArgs e)
         {
-            _serialPort.Close();
+            _serialPort.DataReceived -= new SerialDataReceivedEventHandler(sp_DataReceived);
             _serialPort.Dispose();
+            _serialPort.Close();
             eventBox.Items.Insert(0, "Close serial scale port");
         }
 
@@ -118,7 +120,6 @@ namespace MettlerToledoLoadCellTool
         {
             byte[] bytestosend = { 0x06, 0x53, 0x58, 0x49, 0x0d, 0x0a };
             _serialPort.Write(bytestosend, 0, bytestosend.Length);
-            //eventBox.Items.Insert(0, "Get weight from loadcell");
         }
 
         private void stopReadingWeightBtn_Click(object sender, EventArgs e)
@@ -208,6 +209,20 @@ namespace MettlerToledoLoadCellTool
             buf[8] = tmp;
             buf[2] = tmp;
             buf[3] = (byte)(buf[3] + buf[8]);
+        }
+
+        private void tarraScaleBtn_Click(object sender, EventArgs e)
+        {
+            byte[] bytestosend = { 0x06, 0x54, 0x0d, 0x0a };
+            _serialPort.Write(bytestosend, 0, bytestosend.Length);
+            eventBox.Items.Insert(0, "Tarra scale");
+        }
+
+        private void nullScaleBtn_Click(object sender, EventArgs e)
+        {
+            byte[] bytestosend = { 0x06, 0x5A, 0x0d, 0x0a };
+            _serialPort.Write(bytestosend, 0, bytestosend.Length);
+            eventBox.Items.Insert(0, "Set scale to null");
         }
     }
 }

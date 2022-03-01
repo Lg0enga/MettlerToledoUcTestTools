@@ -39,15 +39,18 @@
             this.weightLabel = new System.Windows.Forms.Label();
             this.stopReadingWeightBtn = new System.Windows.Forms.Button();
             this.resetJidaBtn = new System.Windows.Forms.Button();
+            this.tarraScaleBtn = new System.Windows.Forms.Button();
+            this.nullScaleBtn = new System.Windows.Forms.Button();
+            this.tarraWeightLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // eventBox
             // 
             this.eventBox.FormattingEnabled = true;
             this.eventBox.ItemHeight = 20;
-            this.eventBox.Location = new System.Drawing.Point(12, 154);
+            this.eventBox.Location = new System.Drawing.Point(12, 197);
             this.eventBox.Name = "eventBox";
-            this.eventBox.Size = new System.Drawing.Size(1447, 784);
+            this.eventBox.Size = new System.Drawing.Size(1257, 744);
             this.eventBox.TabIndex = 0;
             // 
             // openBtn
@@ -92,7 +95,7 @@
             // 
             // closeBoardBtn
             // 
-            this.closeBoardBtn.Location = new System.Drawing.Point(328, 77);
+            this.closeBoardBtn.Location = new System.Drawing.Point(210, 137);
             this.closeBoardBtn.Name = "closeBoardBtn";
             this.closeBoardBtn.Size = new System.Drawing.Size(112, 54);
             this.closeBoardBtn.TabIndex = 6;
@@ -114,7 +117,7 @@
             // 
             this.weightLabel.AutoSize = true;
             this.weightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.weightLabel.Location = new System.Drawing.Point(1243, 17);
+            this.weightLabel.Location = new System.Drawing.Point(1053, 17);
             this.weightLabel.Name = "weightLabel";
             this.weightLabel.Size = new System.Drawing.Size(24, 32);
             this.weightLabel.TabIndex = 8;
@@ -122,7 +125,7 @@
             // 
             // stopReadingWeightBtn
             // 
-            this.stopReadingWeightBtn.Location = new System.Drawing.Point(580, 77);
+            this.stopReadingWeightBtn.Location = new System.Drawing.Point(462, 137);
             this.stopReadingWeightBtn.Name = "stopReadingWeightBtn";
             this.stopReadingWeightBtn.Size = new System.Drawing.Size(112, 54);
             this.stopReadingWeightBtn.TabIndex = 9;
@@ -140,11 +143,44 @@
             this.resetJidaBtn.UseVisualStyleBackColor = true;
             this.resetJidaBtn.Click += new System.EventHandler(this.resetJidaBtn_Click);
             // 
+            // tarraScaleBtn
+            // 
+            this.tarraScaleBtn.Location = new System.Drawing.Point(580, 77);
+            this.tarraScaleBtn.Name = "tarraScaleBtn";
+            this.tarraScaleBtn.Size = new System.Drawing.Size(112, 54);
+            this.tarraScaleBtn.TabIndex = 11;
+            this.tarraScaleBtn.Text = "Tarra";
+            this.tarraScaleBtn.UseVisualStyleBackColor = true;
+            this.tarraScaleBtn.Click += new System.EventHandler(this.tarraScaleBtn_Click);
+            // 
+            // nullScaleBtn
+            // 
+            this.nullScaleBtn.Location = new System.Drawing.Point(580, 137);
+            this.nullScaleBtn.Name = "nullScaleBtn";
+            this.nullScaleBtn.Size = new System.Drawing.Size(112, 54);
+            this.nullScaleBtn.TabIndex = 12;
+            this.nullScaleBtn.Text = "Null";
+            this.nullScaleBtn.UseVisualStyleBackColor = true;
+            this.nullScaleBtn.Click += new System.EventHandler(this.nullScaleBtn_Click);
+            // 
+            // tarraWeightLabel
+            // 
+            this.tarraWeightLabel.AutoSize = true;
+            this.tarraWeightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tarraWeightLabel.Location = new System.Drawing.Point(1053, 77);
+            this.tarraWeightLabel.Name = "tarraWeightLabel";
+            this.tarraWeightLabel.Size = new System.Drawing.Size(24, 32);
+            this.tarraWeightLabel.TabIndex = 13;
+            this.tarraWeightLabel.Text = "-";
+            // 
             // MettlerScaleReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1471, 961);
+            this.ClientSize = new System.Drawing.Size(1281, 961);
+            this.Controls.Add(this.tarraWeightLabel);
+            this.Controls.Add(this.nullScaleBtn);
+            this.Controls.Add(this.tarraScaleBtn);
             this.Controls.Add(this.resetJidaBtn);
             this.Controls.Add(this.stopReadingWeightBtn);
             this.Controls.Add(this.weightLabel);
@@ -174,6 +210,9 @@
         private System.Windows.Forms.Label weightLabel;
         private System.Windows.Forms.Button stopReadingWeightBtn;
         private System.Windows.Forms.Button resetJidaBtn;
+        private System.Windows.Forms.Button tarraScaleBtn;
+        private System.Windows.Forms.Button nullScaleBtn;
+        private System.Windows.Forms.Label tarraWeightLabel;
     }
 
 }
