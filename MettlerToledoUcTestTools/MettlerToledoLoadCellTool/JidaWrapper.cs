@@ -6,7 +6,7 @@ namespace MettlerToledoLoadCellTool
     /// <summary>
     /// The native methods of the JIDA API.
     /// </summary>
-    public static class NativeMethods
+    public static class JiddaWrapper
     {
         /// <summary>
         /// The JIDA DLL version major number.

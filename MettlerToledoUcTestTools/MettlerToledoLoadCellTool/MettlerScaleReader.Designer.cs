@@ -30,189 +30,200 @@
         private void InitializeComponent()
         {
             this.eventBox = new System.Windows.Forms.ListBox();
-            this.openBtn = new System.Windows.Forms.Button();
-            this.closeBtn = new System.Windows.Forms.Button();
-            this.openBoardBtn = new System.Windows.Forms.Button();
-            this.startWeightBtn = new System.Windows.Forms.Button();
-            this.closeBoardBtn = new System.Windows.Forms.Button();
-            this.initScaleButn = new System.Windows.Forms.Button();
-            this.weightLabel = new System.Windows.Forms.Label();
-            this.stopReadingWeightBtn = new System.Windows.Forms.Button();
-            this.resetJidaBtn = new System.Windows.Forms.Button();
+            this.loadcellGroupBox = new System.Windows.Forms.GroupBox();
+            this.closeScaleBtn = new System.Windows.Forms.Button();
             this.tarraScaleBtn = new System.Windows.Forms.Button();
             this.nullScaleBtn = new System.Windows.Forms.Button();
+            this.openScaleBtn = new System.Windows.Forms.Button();
             this.tarraWeightLabel = new System.Windows.Forms.Label();
+            this.weightLabel = new System.Windows.Forms.Label();
+            this.printerGroupBox = new System.Windows.Forms.GroupBox();
+            this.feedLabelBtn = new System.Windows.Forms.Button();
+            this.printTestLabelBtn = new System.Windows.Forms.Button();
+            this.closePrinterBtn = new System.Windows.Forms.Button();
+            this.openPrinterBtn = new System.Windows.Forms.Button();
+            this.loadcellGroupBox.SuspendLayout();
+            this.printerGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // eventBox
             // 
             this.eventBox.FormattingEnabled = true;
             this.eventBox.ItemHeight = 20;
-            this.eventBox.Location = new System.Drawing.Point(12, 197);
+            this.eventBox.Location = new System.Drawing.Point(12, 185);
             this.eventBox.Name = "eventBox";
-            this.eventBox.Size = new System.Drawing.Size(1257, 744);
+            this.eventBox.Size = new System.Drawing.Size(1257, 764);
             this.eventBox.TabIndex = 0;
             // 
-            // openBtn
+            // loadcellGroupBox
             // 
-            this.openBtn.Location = new System.Drawing.Point(12, 12);
-            this.openBtn.Name = "openBtn";
-            this.openBtn.Size = new System.Drawing.Size(112, 54);
-            this.openBtn.TabIndex = 1;
-            this.openBtn.Text = "Open";
-            this.openBtn.UseVisualStyleBackColor = true;
-            this.openBtn.Click += new System.EventHandler(this.openBtn_Click);
+            this.loadcellGroupBox.Controls.Add(this.closeScaleBtn);
+            this.loadcellGroupBox.Controls.Add(this.tarraScaleBtn);
+            this.loadcellGroupBox.Controls.Add(this.nullScaleBtn);
+            this.loadcellGroupBox.Controls.Add(this.openScaleBtn);
+            this.loadcellGroupBox.Controls.Add(this.tarraWeightLabel);
+            this.loadcellGroupBox.Controls.Add(this.weightLabel);
+            this.loadcellGroupBox.Location = new System.Drawing.Point(589, 12);
+            this.loadcellGroupBox.Name = "loadcellGroupBox";
+            this.loadcellGroupBox.Size = new System.Drawing.Size(680, 165);
+            this.loadcellGroupBox.TabIndex = 20;
+            this.loadcellGroupBox.TabStop = false;
+            this.loadcellGroupBox.Text = "UC loadcell";
             // 
-            // closeBtn
+            // closeScaleBtn
             // 
-            this.closeBtn.Location = new System.Drawing.Point(12, 77);
-            this.closeBtn.Name = "closeBtn";
-            this.closeBtn.Size = new System.Drawing.Size(112, 54);
-            this.closeBtn.TabIndex = 2;
-            this.closeBtn.Text = "Close";
-            this.closeBtn.UseVisualStyleBackColor = true;
-            this.closeBtn.Click += new System.EventHandler(this.closeBtn_Click);
-            // 
-            // openBoardBtn
-            // 
-            this.openBoardBtn.Location = new System.Drawing.Point(210, 12);
-            this.openBoardBtn.Name = "openBoardBtn";
-            this.openBoardBtn.Size = new System.Drawing.Size(112, 54);
-            this.openBoardBtn.TabIndex = 4;
-            this.openBoardBtn.Text = " Init Jida";
-            this.openBoardBtn.UseVisualStyleBackColor = true;
-            this.openBoardBtn.Click += new System.EventHandler(this.openBoardBtn_Click);
-            // 
-            // startWeightBtn
-            // 
-            this.startWeightBtn.Location = new System.Drawing.Point(462, 77);
-            this.startWeightBtn.Name = "startWeightBtn";
-            this.startWeightBtn.Size = new System.Drawing.Size(112, 54);
-            this.startWeightBtn.TabIndex = 5;
-            this.startWeightBtn.Text = "Start reading";
-            this.startWeightBtn.UseVisualStyleBackColor = true;
-            this.startWeightBtn.Click += new System.EventHandler(this.startReadingWeightBtn_Click);
-            // 
-            // closeBoardBtn
-            // 
-            this.closeBoardBtn.Location = new System.Drawing.Point(210, 137);
-            this.closeBoardBtn.Name = "closeBoardBtn";
-            this.closeBoardBtn.Size = new System.Drawing.Size(112, 54);
-            this.closeBoardBtn.TabIndex = 6;
-            this.closeBoardBtn.Text = "Close";
-            this.closeBoardBtn.UseVisualStyleBackColor = true;
-            this.closeBoardBtn.Click += new System.EventHandler(this.closeBoardBtn_Click);
-            // 
-            // initScaleButn
-            // 
-            this.initScaleButn.Location = new System.Drawing.Point(462, 17);
-            this.initScaleButn.Name = "initScaleButn";
-            this.initScaleButn.Size = new System.Drawing.Size(112, 54);
-            this.initScaleButn.TabIndex = 7;
-            this.initScaleButn.Text = "Init Scale";
-            this.initScaleButn.UseVisualStyleBackColor = true;
-            this.initScaleButn.Click += new System.EventHandler(this.initScaleBtn_Click);
-            // 
-            // weightLabel
-            // 
-            this.weightLabel.AutoSize = true;
-            this.weightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.weightLabel.Location = new System.Drawing.Point(1053, 17);
-            this.weightLabel.Name = "weightLabel";
-            this.weightLabel.Size = new System.Drawing.Size(24, 32);
-            this.weightLabel.TabIndex = 8;
-            this.weightLabel.Text = "-";
-            // 
-            // stopReadingWeightBtn
-            // 
-            this.stopReadingWeightBtn.Location = new System.Drawing.Point(462, 137);
-            this.stopReadingWeightBtn.Name = "stopReadingWeightBtn";
-            this.stopReadingWeightBtn.Size = new System.Drawing.Size(112, 54);
-            this.stopReadingWeightBtn.TabIndex = 9;
-            this.stopReadingWeightBtn.Text = "Stop reading";
-            this.stopReadingWeightBtn.UseVisualStyleBackColor = true;
-            this.stopReadingWeightBtn.Click += new System.EventHandler(this.stopReadingWeightBtn_Click);
-            // 
-            // resetJidaBtn
-            // 
-            this.resetJidaBtn.Location = new System.Drawing.Point(210, 77);
-            this.resetJidaBtn.Name = "resetJidaBtn";
-            this.resetJidaBtn.Size = new System.Drawing.Size(112, 54);
-            this.resetJidaBtn.TabIndex = 10;
-            this.resetJidaBtn.Text = "Reset Jida";
-            this.resetJidaBtn.UseVisualStyleBackColor = true;
-            this.resetJidaBtn.Click += new System.EventHandler(this.resetJidaBtn_Click);
+            this.closeScaleBtn.Enabled = false;
+            this.closeScaleBtn.Location = new System.Drawing.Point(6, 86);
+            this.closeScaleBtn.Name = "closeScaleBtn";
+            this.closeScaleBtn.Size = new System.Drawing.Size(134, 50);
+            this.closeScaleBtn.TabIndex = 21;
+            this.closeScaleBtn.Text = "Close scale";
+            this.closeScaleBtn.UseVisualStyleBackColor = true;
+            this.closeScaleBtn.Click += new System.EventHandler(this.closeScaleBtn_click);
             // 
             // tarraScaleBtn
             // 
-            this.tarraScaleBtn.Location = new System.Drawing.Point(580, 77);
+            this.tarraScaleBtn.Enabled = false;
+            this.tarraScaleBtn.Location = new System.Drawing.Point(146, 86);
             this.tarraScaleBtn.Name = "tarraScaleBtn";
-            this.tarraScaleBtn.Size = new System.Drawing.Size(112, 54);
-            this.tarraScaleBtn.TabIndex = 11;
+            this.tarraScaleBtn.Size = new System.Drawing.Size(134, 50);
+            this.tarraScaleBtn.TabIndex = 20;
             this.tarraScaleBtn.Text = "Tarra";
             this.tarraScaleBtn.UseVisualStyleBackColor = true;
-            this.tarraScaleBtn.Click += new System.EventHandler(this.tarraScaleBtn_Click);
+            this.tarraScaleBtn.Click += new System.EventHandler(this.tarraScaleBtn_Click_1);
             // 
             // nullScaleBtn
             // 
-            this.nullScaleBtn.Location = new System.Drawing.Point(580, 137);
+            this.nullScaleBtn.Enabled = false;
+            this.nullScaleBtn.Location = new System.Drawing.Point(146, 30);
             this.nullScaleBtn.Name = "nullScaleBtn";
-            this.nullScaleBtn.Size = new System.Drawing.Size(112, 54);
-            this.nullScaleBtn.TabIndex = 12;
-            this.nullScaleBtn.Text = "Null";
+            this.nullScaleBtn.Size = new System.Drawing.Size(134, 50);
+            this.nullScaleBtn.TabIndex = 19;
+            this.nullScaleBtn.Text = "Null scale";
             this.nullScaleBtn.UseVisualStyleBackColor = true;
-            this.nullScaleBtn.Click += new System.EventHandler(this.nullScaleBtn_Click);
+            this.nullScaleBtn.Click += new System.EventHandler(this.nullScaleBtn_Click_1);
+            // 
+            // openScaleBtn
+            // 
+            this.openScaleBtn.Location = new System.Drawing.Point(6, 30);
+            this.openScaleBtn.Name = "openScaleBtn";
+            this.openScaleBtn.Size = new System.Drawing.Size(134, 50);
+            this.openScaleBtn.TabIndex = 18;
+            this.openScaleBtn.Text = "Open scale";
+            this.openScaleBtn.UseVisualStyleBackColor = true;
+            this.openScaleBtn.Click += new System.EventHandler(this.openScaleBtn_Click);
             // 
             // tarraWeightLabel
             // 
             this.tarraWeightLabel.AutoSize = true;
             this.tarraWeightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tarraWeightLabel.Location = new System.Drawing.Point(1053, 77);
+            this.tarraWeightLabel.Location = new System.Drawing.Point(348, 91);
             this.tarraWeightLabel.Name = "tarraWeightLabel";
             this.tarraWeightLabel.Size = new System.Drawing.Size(24, 32);
-            this.tarraWeightLabel.TabIndex = 13;
+            this.tarraWeightLabel.TabIndex = 17;
             this.tarraWeightLabel.Text = "-";
+            // 
+            // weightLabel
+            // 
+            this.weightLabel.AutoSize = true;
+            this.weightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.weightLabel.Location = new System.Drawing.Point(348, 35);
+            this.weightLabel.Name = "weightLabel";
+            this.weightLabel.Size = new System.Drawing.Size(24, 32);
+            this.weightLabel.TabIndex = 16;
+            this.weightLabel.Text = "-";
+            // 
+            // printerGroupBox
+            // 
+            this.printerGroupBox.Controls.Add(this.feedLabelBtn);
+            this.printerGroupBox.Controls.Add(this.printTestLabelBtn);
+            this.printerGroupBox.Controls.Add(this.closePrinterBtn);
+            this.printerGroupBox.Controls.Add(this.openPrinterBtn);
+            this.printerGroupBox.Location = new System.Drawing.Point(12, 12);
+            this.printerGroupBox.Name = "printerGroupBox";
+            this.printerGroupBox.Size = new System.Drawing.Size(571, 165);
+            this.printerGroupBox.TabIndex = 19;
+            this.printerGroupBox.TabStop = false;
+            this.printerGroupBox.Text = "UC Printer";
+            // 
+            // feedLabelBtn
+            // 
+            this.feedLabelBtn.Enabled = false;
+            this.feedLabelBtn.Location = new System.Drawing.Point(431, 86);
+            this.feedLabelBtn.Name = "feedLabelBtn";
+            this.feedLabelBtn.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.feedLabelBtn.Size = new System.Drawing.Size(134, 50);
+            this.feedLabelBtn.TabIndex = 3;
+            this.feedLabelBtn.Text = "Feed label";
+            this.feedLabelBtn.UseVisualStyleBackColor = true;
+            this.feedLabelBtn.Click += new System.EventHandler(this.feedLabelBtn_Click);
+            // 
+            // printTestLabelBtn
+            // 
+            this.printTestLabelBtn.Enabled = false;
+            this.printTestLabelBtn.Location = new System.Drawing.Point(431, 30);
+            this.printTestLabelBtn.Name = "printTestLabelBtn";
+            this.printTestLabelBtn.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.printTestLabelBtn.Size = new System.Drawing.Size(134, 50);
+            this.printTestLabelBtn.TabIndex = 2;
+            this.printTestLabelBtn.Text = "Print test label";
+            this.printTestLabelBtn.UseVisualStyleBackColor = true;
+            this.printTestLabelBtn.Click += new System.EventHandler(this.printTestLabelBtn_Click);
+            // 
+            // closePrinterBtn
+            // 
+            this.closePrinterBtn.Enabled = false;
+            this.closePrinterBtn.Location = new System.Drawing.Point(7, 86);
+            this.closePrinterBtn.Name = "closePrinterBtn";
+            this.closePrinterBtn.Size = new System.Drawing.Size(134, 50);
+            this.closePrinterBtn.TabIndex = 1;
+            this.closePrinterBtn.Text = "Close Printer";
+            this.closePrinterBtn.UseVisualStyleBackColor = true;
+            this.closePrinterBtn.Click += new System.EventHandler(this.closePrinterBtn_Click);
+            // 
+            // openPrinterBtn
+            // 
+            this.openPrinterBtn.Location = new System.Drawing.Point(7, 30);
+            this.openPrinterBtn.Name = "openPrinterBtn";
+            this.openPrinterBtn.Size = new System.Drawing.Size(134, 50);
+            this.openPrinterBtn.TabIndex = 0;
+            this.openPrinterBtn.Text = "Open Printer";
+            this.openPrinterBtn.UseVisualStyleBackColor = true;
+            this.openPrinterBtn.Click += new System.EventHandler(this.openPrinterBtn_Click);
             // 
             // MettlerScaleReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1281, 961);
-            this.Controls.Add(this.tarraWeightLabel);
-            this.Controls.Add(this.nullScaleBtn);
-            this.Controls.Add(this.tarraScaleBtn);
-            this.Controls.Add(this.resetJidaBtn);
-            this.Controls.Add(this.stopReadingWeightBtn);
-            this.Controls.Add(this.weightLabel);
-            this.Controls.Add(this.initScaleButn);
-            this.Controls.Add(this.closeBoardBtn);
-            this.Controls.Add(this.startWeightBtn);
-            this.Controls.Add(this.openBoardBtn);
-            this.Controls.Add(this.closeBtn);
-            this.Controls.Add(this.openBtn);
+            this.Controls.Add(this.loadcellGroupBox);
+            this.Controls.Add(this.printerGroupBox);
             this.Controls.Add(this.eventBox);
             this.Name = "MettlerScaleReader";
             this.Text = "Mettler Toledo UC Loadcell test tool";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.loadcellGroupBox.ResumeLayout(false);
+            this.loadcellGroupBox.PerformLayout();
+            this.printerGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.ListBox eventBox;
-        private System.Windows.Forms.Button openBtn;
-        private System.Windows.Forms.Button closeBtn;
-        private System.Windows.Forms.Button openBoardBtn;
-        private System.Windows.Forms.Button startWeightBtn;
-        private System.Windows.Forms.Button closeBoardBtn;
-        private System.Windows.Forms.Button initScaleButn;
-        private System.Windows.Forms.Label weightLabel;
-        private System.Windows.Forms.Button stopReadingWeightBtn;
-        private System.Windows.Forms.Button resetJidaBtn;
+        private System.Windows.Forms.GroupBox loadcellGroupBox;
+        private System.Windows.Forms.Button closeScaleBtn;
         private System.Windows.Forms.Button tarraScaleBtn;
         private System.Windows.Forms.Button nullScaleBtn;
+        private System.Windows.Forms.Button openScaleBtn;
         private System.Windows.Forms.Label tarraWeightLabel;
+        private System.Windows.Forms.Label weightLabel;
+        private System.Windows.Forms.GroupBox printerGroupBox;
+        private System.Windows.Forms.Button feedLabelBtn;
+        private System.Windows.Forms.Button printTestLabelBtn;
+        private System.Windows.Forms.Button closePrinterBtn;
+        private System.Windows.Forms.Button openPrinterBtn;
     }
 
 }

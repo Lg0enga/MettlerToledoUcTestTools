@@ -1,32 +1,29 @@
-﻿using System;
+﻿using LibUsbDotNet;
+using LibUsbDotNet.Main;
+using System;
 using System.IO.Ports;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MettlerToledoLoadCellTool
 {
     public partial class MettlerScaleReader : Form
     {
-        SerialPort _serialPort = new SerialPort("COM2", 9600, Parity.Even, 7, StopBits.Two);
-        
-        Timer _timer = new Timer();
+        private SerialPort _serialPort = new SerialPort("COM2", 9600, Parity.Even, 7, StopBits.Two);
 
-        IntPtr handle = IntPtr.Zero;
+        private Timer _timer = new Timer();
+        private Timer _jidaTimer = new Timer();
+
+        private UcLoadcell _ucLoadcell;
+        private UsbDevice _evoLinePrinter;
 
         public MettlerScaleReader()
         {
             InitializeComponent();
         }
 
-        private void openBtn_Click(object sender, EventArgs e)
-        {
-            _serialPort.RtsEnable = false;
-            _serialPort.DtrEnable = false;
-            _serialPort.Handshake = Handshake.None;
-            _serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
-            _serialPort.Open();
-            eventBox.Items.Insert(0, "Open serial scale port");
-        }
+        //
+        // Loadcell
+        //
 
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -51,178 +48,245 @@ namespace MettlerToledoLoadCellTool
             }
             eventBox.Items.Insert(0, data.Trim()); 
         }
-
-        private void closeBtn_Click(object sender, EventArgs e)
-        {
-            _serialPort.DataReceived -= new SerialDataReceivedEventHandler(sp_DataReceived);
-            _serialPort.Dispose();
-            _serialPort.Close();
-            eventBox.Items.Insert(0, "Close serial scale port");
-        }
-
-        private void openBoardBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                bool status;
-
-                status = NativeMethods.JidaDllInitialize();
-                eventBox.Items.Insert(0, "Jida initilize: " + status);
-                status = NativeMethods.JidaDllIsAvailable();
-                eventBox.Items.Insert(0, "Jida enabled: " + status);
-
-                status = NativeMethods.JidaBoardOpenByNameA("UUP6", ref handle);
-                eventBox.Items.Insert(0, "Board opend: " + status + " location: " + handle);
-
-                status = NativeMethods.JidaI2CIsAvailable(handle, 5);
-                eventBox.Items.Insert(0, "JidaI2CIsAvailable: " + status);
-
-                var i2cType = NativeMethods.JidaI2CType(handle, 5);
-                eventBox.Items.Insert(0, "JidaI2CType: " + i2cType);
-
-                ResetScale();
-            }
-            catch (Exception ex)
-            {
-                eventBox.Items.Insert(0, "error: " + ex.Message);
-            }
-        }   
-
-        private void resetJidaBtn_Click(object sender, EventArgs e)
-        {
-            ResetScale();
-        }
-
-        private void closeBoardBtn_Click(object sender, EventArgs e)
-        {
-            bool status;
-            status = NativeMethods.JidaBoardClose(handle);
-            eventBox.Items.Insert(0, "Board closed: " + status);
-            status = NativeMethods.JidaDllUninitialize();
-            eventBox.Items.Insert(0, "Uninitilize: " + status);
-        }
-
-        private void initScaleBtn_Click(object sender, EventArgs e)
-        {
-            byte[] bytestosend = { 0x16, 0x1B, 0x3F };
-            _serialPort.Write(bytestosend, 0, bytestosend.Length);
-            eventBox.Items.Insert(0, "Init loadcell");
-        }
-
-        private void startReadingWeightBtn_Click(object sender, EventArgs e)
-        {
-            _timer.Interval = 500;
-            _timer.Tick += new EventHandler(timer_Tick);
-            _timer.Start();   
-        }
-
+    
         private void timer_Tick(object sender, EventArgs e)
         {
             byte[] bytestosend = { 0x06, 0x53, 0x58, 0x49, 0x0d, 0x0a };
             _serialPort.Write(bytestosend, 0, bytestosend.Length);
         }
 
-        private void stopReadingWeightBtn_Click(object sender, EventArgs e)
+        private void jidaTimer_Tick(object sender, EventArgs e)
         {
-            _timer.Stop();
-            _timer.Dispose();
+            _ucLoadcell.ReOpenBoardCommunication();
         }
 
-        public static string ByteArrayToString(byte[] ba)
+        private void openScaleBtn_Click(object sender, EventArgs e)
         {
-            StringBuilder hex = new StringBuilder(ba.Length * 2);
-            foreach (byte b in ba)
-                hex.AppendFormat("{0:x2}", b);
-            return hex.ToString();
+            try
+            {
+                // Open serial port
+                _serialPort.RtsEnable = false;
+                _serialPort.DtrEnable = false;
+                _serialPort.Handshake = Handshake.None;
+                _serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
+                _serialPort.Open();
+                eventBox.Items.Insert(0, "Open serial scale port");
+
+                // Open jida board
+                var initializeStatus = JiddaWrapper.JidaDllInitialize();
+                if (initializeStatus && JiddaWrapper.JidaDllIsAvailable())
+                {
+                    IntPtr handle = IntPtr.Zero;
+                    JiddaWrapper.JidaBoardOpenByNameA("UUP6", ref handle);
+                    _ucLoadcell = new UcLoadcell(handle);
+                    _ucLoadcell.ReOpenBoardCommunication();
+
+                    // Send inital command for loadcell
+                    byte[] bytestosend = { 0x16, 0x1B, 0x3F };
+                    _serialPort.Write(bytestosend, 0, bytestosend.Length);
+
+                    // Setup weight reading timer
+                    _timer.Interval = 500;
+                    _timer.Tick += new EventHandler(timer_Tick);
+                    _timer.Start();
+
+                    // Setup jida board reopen timer
+                    _jidaTimer.Interval = 30000;
+                    _jidaTimer.Tick += new EventHandler(timer_Tick);
+                    _jidaTimer.Start();
+
+                    nullScaleBtn.Enabled = true;
+                    tarraScaleBtn.Enabled = true;
+                    closeScaleBtn.Enabled = true;
+                }
+                else
+                {
+                    eventBox.Items.Insert(0, "No access to jida board. Open application as administrator");
+                }
+            }
+            catch (Exception ex)
+            {
+                eventBox.Items.Insert(0, $"Open scale failed {ex.Message}");
+            }
         }
 
-        private void ResetScale()
+        private void closeScaleBtn_click(object sender, EventArgs e)
         {
-            byte[] buf = { 0x02, 0x29, 0x20, 0x04, 0x04, 0x22, 0x97, 0x71, 0x45, 0x15, 0x00, 0x26 };
-            byte unknow = 0x00;
-            bool status;
+            try
+            {
+                // Stop weight reading
+                _timer.Stop();
+                _timer.Dispose();                              
 
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x10, ref unknow); // not sure what this does, but best to still perform the read like the original SW
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x94, ref buf[0]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x95, ref buf[1]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x96, ref buf[2]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x97, ref buf[3]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x98, ref buf[4]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x99, ref buf[5]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x9a, ref buf[6]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x9b, ref buf[7]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x9c, ref buf[8]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x9d, ref buf[9]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x9e, ref buf[10]);
-            eventBox.Items.Insert(0, "read: " + status);
-            status = NativeMethods.JidaI2CReadRegister(handle, 0, 0xc0, 0x9f, ref buf[11]);
-            eventBox.Items.Insert(0, "read: " + status);
+                // Close Jida
+                JiddaWrapper.JidaDllUninitialize();
+                _jidaTimer.Stop();
+                _jidaTimer.Dispose();
 
-            eventBox.Items.Insert(0, "reading: " + ByteArrayToString(buf));
+                // Close serial port
+                _serialPort.DataReceived -= new SerialDataReceivedEventHandler(sp_DataReceived);
+                _serialPort.Dispose();
+                _serialPort.Close();
+                eventBox.Items.Insert(0, "Close serial scale port");
 
-            calculateResponse(buf);
+                nullScaleBtn.Enabled = false;
+                tarraScaleBtn.Enabled = false;
+                closeScaleBtn.Enabled = false;
 
-            eventBox.Items.Insert(0, "calculated: " + ByteArrayToString(buf));
-
-            status = NativeMethods.JidaI2CWriteRegister(handle, 0, 0xc0, 0xd0, buf[0]);
-            eventBox.Items.Insert(0, "write: " + status);
-            status = NativeMethods.JidaI2CWriteRegister(handle, 0, 0xc0, 0xd0, buf[1]);
-            eventBox.Items.Insert(0, "write: " + status);
-            status = NativeMethods.JidaI2CWriteRegister(handle, 0, 0xc0, 0xd0, buf[2]);
-            eventBox.Items.Insert(0, "write: " + status);
-            status = NativeMethods.JidaI2CWriteRegister(handle, 0, 0xc0, 0xd0, buf[3]);
-            eventBox.Items.Insert(0, "write: " + status);
+            }
+            catch(Exception ex)
+            {
+                eventBox.Items.Insert(0, "Error when closing scale");
+            }
         }
 
-        private void calculateResponse(byte[] buf)
+        private void nullScaleBtn_Click_1(object sender, EventArgs e)
         {
-            byte tmp;
-
-            buf[0] = (byte)(buf[0] + buf[1]);
-            tmp = buf[0];
-            buf[0] = (byte)(buf[2] + tmp);
-            tmp = (byte)(buf[3] + buf[2] + tmp);
-            buf[0] = tmp;
-            buf[0] = tmp;
-            buf[3] = tmp;
-            buf[4] = (byte)(buf[4] + buf[5]);
-            tmp = buf[4];
-            buf[4] = (byte)(buf[6] + tmp);
-            tmp = (byte)(buf[7] + buf[6] + tmp);
-            buf[4] = tmp;
-            buf[1] = tmp;
-            buf[3] = (byte)(buf[3] + buf[4]);
-            buf[8] = (byte)(buf[8] + buf[9]);
-            tmp = buf[8];
-            buf[8] = (byte)(buf[10] + tmp);
-            tmp = (byte)(buf[0xb] + buf[10] + tmp);
-            buf[8] = tmp;
-            buf[2] = tmp;
-            buf[3] = (byte)(buf[3] + buf[8]);
+            byte[] bytestosend = { 0x06, 0x5A, 0x0d, 0x0a };
+            _serialPort.Write(bytestosend, 0, bytestosend.Length);
+            eventBox.Items.Insert(0, "Set scale to null");
         }
 
-        private void tarraScaleBtn_Click(object sender, EventArgs e)
+        private void tarraScaleBtn_Click_1(object sender, EventArgs e)
         {
             byte[] bytestosend = { 0x06, 0x54, 0x0d, 0x0a };
             _serialPort.Write(bytestosend, 0, bytestosend.Length);
             eventBox.Items.Insert(0, "Tarra scale");
         }
 
-        private void nullScaleBtn_Click(object sender, EventArgs e)
+        //
+        // Printer
+        //
+
+        private void openPrinterBtn_Click(object sender, EventArgs e)
         {
-            byte[] bytestosend = { 0x06, 0x5A, 0x0d, 0x0a };
-            _serialPort.Write(bytestosend, 0, bytestosend.Length);
-            eventBox.Items.Insert(0, "Set scale to null");
+            try
+            {
+                _evoLinePrinter = UsbDevice.OpenUsbDevice(new UsbDeviceFinder(0x0EB8, 0x3000));
+                _evoLinePrinter.Open();
+
+                IUsbDevice wholeUsbDevice = _evoLinePrinter as IUsbDevice;
+                if (!ReferenceEquals(wholeUsbDevice, null))
+                {
+                    wholeUsbDevice.SetConfiguration(1);
+
+                    wholeUsbDevice.ClaimInterface(0);
+                }
+
+                eventBox.Items.Add("Open usb device printer");
+
+                printTestLabelBtn.Enabled = true;
+                feedLabelBtn.Enabled = true;
+                closePrinterBtn.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                eventBox.Items.Add(ex.Message);
+            }
+        }      
+
+        private void feedLabelBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var evoEndpointWriter = _evoLinePrinter.OpenEndpointWriter(WriteEndpointID.Ep02, EndpointType.Bulk);
+                evoEndpointWriter.Write(new byte[] { 0x01, 0x1b, 0x53 }, 1000, out int outer);
+                evoEndpointWriter.Dispose();
+                eventBox.Items.Add("Feed evo line printer");
+            }
+            catch (Exception ex)
+            {
+                eventBox.Items.Add(ex.Message);
+            }
+        }
+
+        private void closePrinterBtn_Click(object sender, EventArgs e)
+        {
+            IUsbDevice wholeUsbDevice = _evoLinePrinter as IUsbDevice;
+            if (!ReferenceEquals(wholeUsbDevice, null))
+            {
+                wholeUsbDevice.ReleaseInterface(0);
+            }
+            _evoLinePrinter.Close();
+            UsbDevice.Exit();
+
+            printTestLabelBtn.Enabled = false;
+            feedLabelBtn.Enabled = false;
+            closePrinterBtn.Enabled = false;
+        }
+
+        private void printTestLabelBtn_Click(object sender, EventArgs e)
+        {
+            int lenght;
+            byte[] data = new byte[1024];
+            ErrorCode errorCode;
+            int timeout = 500;
+
+            try
+            {
+                // Open read and writer endpoint
+                var evoEndpointWriter = _evoLinePrinter.OpenEndpointWriter(WriteEndpointID.Ep02, EndpointType.Bulk);
+                var evoEndpointReader = _evoLinePrinter.OpenEndpointReader(ReadEndpointID.Ep02);
+
+                // Create label
+                var bitmap = BitmapConverter.CreatTestBitmap(weightLabel.Text);
+                bitmap = BitmapConverter.BitmapTo1Bpp2(bitmap);
+                var command = BitmapConverter.Convert(bitmap);
+
+                var arrays = Utils.Split(command, 4000);  
+              
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x01, 0x1b, 0x64, 0x31, 0x31, 0x31, 0x32 }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x02, 0x1b, 0x5d, 0x30, 0x31, 0x36, 0x34, 0x38 }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x03, 0x1b, 0x7e }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x04, 0x1b, 0x5a, 0x0d, 0x0a }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x05, 0x1b, 0x5a }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x06, 0x1b, 0x5a }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x07, 0x1b, 0xbe }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                errorCode = evoEndpointWriter.Write(new byte[] { 0x08, 0x1b, 0x57, 0x34, 0x33, 0x32, 0x30, 0x34, 0x30, 0x30 }, timeout, out lenght);
+                evoEndpointReader.Read(data, timeout, out lenght);
+                eventBox.Items.Add($"Write status: {errorCode} + {Utils.ByteArrayToString(data)}");
+
+                foreach (var array in arrays)
+                {
+                    errorCode = evoEndpointWriter.Write(array, timeout, out lenght);
+                    evoEndpointReader.Read(data, timeout, out lenght);
+                    eventBox.Items.Add($"Write label status: {errorCode} + {Utils.ByteArrayToString(data)}");
+                    if (errorCode == ErrorCode.IoTimedOut)
+                    {
+                        evoEndpointWriter.Reset();
+                    }
+                }
+                
+                // Close writer
+                evoEndpointWriter.Reset();
+                evoEndpointWriter.Abort();
+                evoEndpointWriter.Dispose();
+
+                // Close reader
+                evoEndpointReader.Reset();
+                evoEndpointReader.Abort();
+                evoEndpointReader.Dispose();
+
+                eventBox.Items.Add("Print test label evo line printer");
+            }
+            catch (Exception ex)
+            {
+                eventBox.Items.Add(ex.Message);
+            }
         }
     }
 }
