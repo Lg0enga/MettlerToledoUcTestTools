@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Runtime.InteropServices;
 
 namespace MettlerToledoLoadCellTool
@@ -138,6 +139,56 @@ namespace MettlerToledoLoadCellTool
         /// </returns>
         [DllImport("jida.dll")]
         internal static extern bool JidaBoardClose(IntPtr boardHandle);
+
+        [DllImport("jida.dll", CharSet = CharSet.Ansi)]
+        internal static extern bool JidaBoardGetNameA(IntPtr boardHandle, StringBuilder name, int size);
+
+        /// <summary>
+        /// The board name the tool was originally written for (default in the GUI).
+        /// </summary>
+        public const string DefaultBoardName = "UUP6";
+
+        /// <summary>
+        /// Opens the JIDA board: first by the given name, otherwise the first board JIDA
+        /// reports (any name). Returns false when no board could be opened.
+        /// <paramref name="info"/> describes what was opened (or why it failed) for the log.
+        /// </summary>
+        public static bool OpenBoard(string boardName, ref IntPtr handle, out string info)
+        {
+            boardName = (boardName ?? "").Trim();
+            if (boardName.Length > 0 && JidaBoardOpenByNameA(boardName, ref handle) && handle != IntPtr.Zero)
+            {
+                info = "Opened jida board " + boardName;
+                return true;
+            }
+
+            int count = JidaBoardCount(null, 0);
+            handle = IntPtr.Zero;
+            if (count > 0 && JidaBoardOpen(null, 0, 0, ref handle) && handle != IntPtr.Zero)
+            {
+                info = string.Format("Board {0} not found, opened first jida board: {1} ({2} board(s) present)",
+                    boardName, GetBoardName(handle), count);
+                return true;
+            }
+
+            info = string.Format("Error: could not open a jida board ({0} board(s) present)", count);
+            return false;
+        }
+
+        public static string GetBoardName(IntPtr handle)
+        {
+            try
+            {
+                StringBuilder name = new StringBuilder(64);
+                if (JidaBoardGetNameA(handle, name, name.Capacity))
+                    return name.ToString();
+            }
+            catch (EntryPointNotFoundException)
+            {
+                // Older jida.dll without this function
+            }
+            return "<unknown name>";
+        }
 
         /// <summary>
         /// Retrieves the number of I2C buses on the board.

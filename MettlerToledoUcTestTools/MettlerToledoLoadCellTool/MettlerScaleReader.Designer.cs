@@ -37,6 +37,13 @@
             this.openScaleBtn = new System.Windows.Forms.Button();
             this.tarraWeightLabel = new System.Windows.Forms.Label();
             this.weightLabel = new System.Windows.Forms.Label();
+            this.boardNameLabel = new System.Windows.Forms.Label();
+            this.boardNameInput = new System.Windows.Forms.TextBox();
+            this.i2cBusLabel = new System.Windows.Forms.Label();
+            this.i2cBusInput = new System.Windows.Forms.NumericUpDown();
+            this.i2cAddressLabel = new System.Windows.Forms.Label();
+            this.i2cAddressInput = new System.Windows.Forms.NumericUpDown();
+            this.scanI2cBtn = new System.Windows.Forms.Button();
             this.printerGroupBox = new System.Windows.Forms.GroupBox();
             this.feedLabelBtn = new System.Windows.Forms.Button();
             this.printTestLabelBtn = new System.Windows.Forms.Button();
@@ -44,15 +51,17 @@
             this.openPrinterBtn = new System.Windows.Forms.Button();
             this.loadcellGroupBox.SuspendLayout();
             this.printerGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.i2cBusInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.i2cAddressInput)).BeginInit();
             this.SuspendLayout();
             // 
             // eventBox
             // 
             this.eventBox.FormattingEnabled = true;
             this.eventBox.ItemHeight = 20;
-            this.eventBox.Location = new System.Drawing.Point(12, 185);
+            this.eventBox.Location = new System.Drawing.Point(12, 225);
             this.eventBox.Name = "eventBox";
-            this.eventBox.Size = new System.Drawing.Size(1257, 764);
+            this.eventBox.Size = new System.Drawing.Size(1257, 724);
             this.eventBox.TabIndex = 0;
             // 
             // loadcellGroupBox
@@ -63,9 +72,16 @@
             this.loadcellGroupBox.Controls.Add(this.openScaleBtn);
             this.loadcellGroupBox.Controls.Add(this.tarraWeightLabel);
             this.loadcellGroupBox.Controls.Add(this.weightLabel);
+            this.loadcellGroupBox.Controls.Add(this.boardNameLabel);
+            this.loadcellGroupBox.Controls.Add(this.boardNameInput);
+            this.loadcellGroupBox.Controls.Add(this.i2cBusLabel);
+            this.loadcellGroupBox.Controls.Add(this.i2cBusInput);
+            this.loadcellGroupBox.Controls.Add(this.i2cAddressLabel);
+            this.loadcellGroupBox.Controls.Add(this.i2cAddressInput);
+            this.loadcellGroupBox.Controls.Add(this.scanI2cBtn);
             this.loadcellGroupBox.Location = new System.Drawing.Point(589, 12);
             this.loadcellGroupBox.Name = "loadcellGroupBox";
-            this.loadcellGroupBox.Size = new System.Drawing.Size(680, 165);
+            this.loadcellGroupBox.Size = new System.Drawing.Size(680, 205);
             this.loadcellGroupBox.TabIndex = 20;
             this.loadcellGroupBox.TabStop = false;
             this.loadcellGroupBox.Text = "UC loadcell";
@@ -133,6 +149,81 @@
             this.weightLabel.TabIndex = 16;
             this.weightLabel.Text = "-";
             // 
+            // boardNameLabel
+            //
+            this.boardNameLabel.AutoSize = true;
+            this.boardNameLabel.Location = new System.Drawing.Point(6, 157);
+            this.boardNameLabel.Name = "boardNameLabel";
+            this.boardNameLabel.Size = new System.Drawing.Size(54, 20);
+            this.boardNameLabel.TabIndex = 27;
+            this.boardNameLabel.Text = "Board:";
+            //
+            // boardNameInput
+            //
+            this.boardNameInput.Location = new System.Drawing.Point(66, 155);
+            this.boardNameInput.Name = "boardNameInput";
+            this.boardNameInput.Size = new System.Drawing.Size(80, 26);
+            this.boardNameInput.TabIndex = 28;
+            this.boardNameInput.Text = "UUP6";
+            //
+            // i2cBusLabel
+            // 
+            this.i2cBusLabel.AutoSize = true;
+            this.i2cBusLabel.Location = new System.Drawing.Point(158, 157);
+            this.i2cBusLabel.Name = "i2cBusLabel";
+            this.i2cBusLabel.Size = new System.Drawing.Size(65, 20);
+            this.i2cBusLabel.TabIndex = 22;
+            this.i2cBusLabel.Text = "I2C bus:";
+            // 
+            // i2cBusInput
+            // 
+            this.i2cBusInput.Location = new System.Drawing.Point(228, 155);
+            this.i2cBusInput.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.i2cBusInput.Name = "i2cBusInput";
+            this.i2cBusInput.Size = new System.Drawing.Size(55, 26);
+            this.i2cBusInput.TabIndex = 23;
+            // 
+            // i2cAddressLabel
+            // 
+            this.i2cAddressLabel.AutoSize = true;
+            this.i2cAddressLabel.Location = new System.Drawing.Point(295, 157);
+            this.i2cAddressLabel.Name = "i2cAddressLabel";
+            this.i2cAddressLabel.Size = new System.Drawing.Size(145, 20);
+            this.i2cAddressLabel.TabIndex = 24;
+            this.i2cAddressLabel.Text = "I2C address (hex):";
+            // 
+            // i2cAddressInput
+            // 
+            this.i2cAddressInput.Hexadecimal = true;
+            this.i2cAddressInput.Location = new System.Drawing.Point(445, 155);
+            this.i2cAddressInput.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.i2cAddressInput.Name = "i2cAddressInput";
+            this.i2cAddressInput.Size = new System.Drawing.Size(65, 26);
+            this.i2cAddressInput.TabIndex = 25;
+            this.i2cAddressInput.Value = new decimal(new int[] {
+            192,
+            0,
+            0,
+            0});
+            // 
+            // scanI2cBtn
+            //
+            this.scanI2cBtn.Location = new System.Drawing.Point(525, 148);
+            this.scanI2cBtn.Name = "scanI2cBtn";
+            this.scanI2cBtn.Size = new System.Drawing.Size(145, 40);
+            this.scanI2cBtn.TabIndex = 26;
+            this.scanI2cBtn.Text = "Scan I2C";
+            this.scanI2cBtn.UseVisualStyleBackColor = true;
+            this.scanI2cBtn.Click += new System.EventHandler(this.scanI2cBtn_Click);
+            //
             // printerGroupBox
             // 
             this.printerGroupBox.Controls.Add(this.feedLabelBtn);
@@ -141,7 +232,7 @@
             this.printerGroupBox.Controls.Add(this.openPrinterBtn);
             this.printerGroupBox.Location = new System.Drawing.Point(12, 12);
             this.printerGroupBox.Name = "printerGroupBox";
-            this.printerGroupBox.Size = new System.Drawing.Size(571, 165);
+            this.printerGroupBox.Size = new System.Drawing.Size(571, 205);
             this.printerGroupBox.TabIndex = 19;
             this.printerGroupBox.TabStop = false;
             this.printerGroupBox.Text = "UC Printer";
@@ -205,6 +296,8 @@
             this.loadcellGroupBox.ResumeLayout(false);
             this.loadcellGroupBox.PerformLayout();
             this.printerGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.i2cBusInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.i2cAddressInput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -224,6 +317,13 @@
         private System.Windows.Forms.Button printTestLabelBtn;
         private System.Windows.Forms.Button closePrinterBtn;
         private System.Windows.Forms.Button openPrinterBtn;
+        private System.Windows.Forms.Label boardNameLabel;
+        private System.Windows.Forms.TextBox boardNameInput;
+        private System.Windows.Forms.Label i2cBusLabel;
+        private System.Windows.Forms.NumericUpDown i2cBusInput;
+        private System.Windows.Forms.Label i2cAddressLabel;
+        private System.Windows.Forms.NumericUpDown i2cAddressInput;
+        private System.Windows.Forms.Button scanI2cBtn;
     }
 
 }

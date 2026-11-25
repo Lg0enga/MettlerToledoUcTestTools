@@ -1,6 +1,7 @@
 ﻿using LibUsbDotNet;
 using LibUsbDotNet.Main;
 using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Windows.Forms;
 
@@ -62,6 +63,13 @@ namespace MettlerToledoLoadCellTool
 
         private void openScaleBtn_Click(object sender, EventArgs e)
         {
+            byte selectedAddress = (byte)i2cAddressInput.Value;
+            if (I2cScanner.IsProtectedAddress(selectedAddress))
+            {
+                eventBox.Items.Insert(0, string.Format("Refused: address 0x{0:X2} is an EEPROM/clock generator, writing to it can damage the board", selectedAddress));
+                return;
+            }
+
             try
             {
                 // Open serial port
@@ -77,9 +85,23 @@ namespace MettlerToledoLoadCellTool
                 if (initializeStatus && JiddaWrapper.JidaDllIsAvailable())
                 {
                     IntPtr handle = IntPtr.Zero;
-                    JiddaWrapper.JidaBoardOpenByNameA("UUP6", ref handle);
-                    _ucLoadcell = new UcLoadcell(handle);
-                    _ucLoadcell.ReOpenBoardCommunication();
+                    string boardInfo;
+                    bool boardOpen = JiddaWrapper.OpenBoard(boardNameInput.Text, ref handle, out boardInfo);
+                    eventBox.Items.Insert(0, boardInfo);
+
+                    int i2cBus = (int)i2cBusInput.Value;
+                    byte i2cAddress = (byte)i2cAddressInput.Value;
+                    _ucLoadcell = new UcLoadcell(handle, i2cBus, i2cAddress);
+                    if (!boardOpen)
+                        eventBox.Items.Insert(0, "Loadcell unlock skipped: no jida board");
+                    else if (_ucLoadcell.ReOpenBoardCommunication())
+                        eventBox.Items.Insert(0, string.Format("Loadcell unlocked via I2C bus {0}, address 0x{1:X2}", i2cBus, i2cAddress));
+                    else
+                        eventBox.Items.Insert(0, string.Format("Warning: one or more I2C calls failed on bus {0}, address 0x{1:X2}", i2cBus, i2cAddress));
+                    boardNameInput.Enabled = false;
+                    i2cBusInput.Enabled = false;
+                    i2cAddressInput.Enabled = false;
+                    scanI2cBtn.Enabled = false;
 
                     // Send inital command for loadcell
                     byte[] bytestosend = { 0x16, 0x1B, 0x3F };
@@ -132,6 +154,10 @@ namespace MettlerToledoLoadCellTool
                 nullScaleBtn.Enabled = false;
                 tarraScaleBtn.Enabled = false;
                 closeScaleBtn.Enabled = false;
+                boardNameInput.Enabled = true;
+                i2cBusInput.Enabled = true;
+                i2cAddressInput.Enabled = true;
+                scanI2cBtn.Enabled = true;
 
             }
             catch(Exception ex)
@@ -152,6 +178,55 @@ namespace MettlerToledoLoadCellTool
             byte[] bytestosend = { 0x06, 0x54, 0x0d, 0x0a };
             _serialPort.Write(bytestosend, 0, bytestosend.Length);
             eventBox.Items.Insert(0, "Tarra scale");
+        }
+
+        private void scanI2cBtn_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            scanI2cBtn.Enabled = false;
+            try
+            {
+                if (!JiddaWrapper.JidaDllInitialize() || !JiddaWrapper.JidaDllIsAvailable())
+                {
+                    eventBox.Items.Insert(0, "No access to jida board. Open application as administrator");
+                    return;
+                }
+
+                try
+                {
+                    IntPtr handle = IntPtr.Zero;
+                    string boardInfo;
+                    bool boardOpen = JiddaWrapper.OpenBoard(boardNameInput.Text, ref handle, out boardInfo);
+                    eventBox.Items.Insert(0, boardInfo);
+                    if (!boardOpen)
+                        return;
+
+                    try
+                    {
+                        // Insert in reverse so the scan reads top-down in the event box
+                        List<string> lines = I2cScanner.Scan(handle);
+                        for (int i = lines.Count - 1; i >= 0; i--)
+                            eventBox.Items.Insert(0, lines[i]);
+                    }
+                    finally
+                    {
+                        JiddaWrapper.JidaBoardClose(handle);
+                    }
+                }
+                finally
+                {
+                    JiddaWrapper.JidaDllUninitialize();
+                }
+            }
+            catch (Exception ex)
+            {
+                eventBox.Items.Insert(0, "I2C scan failed: " + ex.Message);
+            }
+            finally
+            {
+                scanI2cBtn.Enabled = true;
+                Cursor = Cursors.Default;
+            }
         }
 
         //
